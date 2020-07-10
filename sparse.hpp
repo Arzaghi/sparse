@@ -33,14 +33,14 @@ public:
         {}
 
         const T& operator*() const { return sparse_[index_]; }
-        const T& operator->() const { return &sparse_[index_]; }
+        const T* operator->() const { return &sparse_[index_]; }
         bool operator==(const const_iterator& rhs) { return &sparse_ == &rhs.sparse_ && index_ == rhs.index_; }
         bool operator!=(const const_iterator& rhs) { return !(*this == rhs); }
 
-        auto operator++() { ++index_; return *this; }
-        auto operator--() { --index_; return *this; }        
-        auto operator++(int) { index_++; return *this; }
-        auto operator--(int) { index_--; return *this; }
+        Sparse<T>::const_iterator operator++() { ++index_; return *this; }
+        Sparse<T>::const_iterator operator--() { --index_; return *this; }
+        Sparse<T>::const_iterator operator++(int) { index_++; return *this; }
+        Sparse<T>::const_iterator operator--(int) { index_--; return *this; }
         const_iterator operator+(size_t idx) const { return const_iterator(sparse_, index_ + idx); }
         const_iterator operator-(size_t idx) const { return const_iterator(sparse_, index_ - idx); }
         const_iterator operator+=(size_t idx) { index_ += idx; return *this; }
@@ -62,10 +62,10 @@ public:
         bool operator==(const const_reverse_iterator& rhs) { return &sparse_ == &rhs.sparse_ && index_ == rhs.index_; }
         bool operator!=(const const_reverse_iterator& rhs) { return !(*this == rhs); }
 
-        auto operator++() { --index_; return *this; }
-        auto operator--() { ++index_; return *this; }
-        auto operator++(int) { index_--; return *this; }
-        auto operator--(int) { index_++; return *this; }
+        Sparse<T>::const_iterator operator++() { --index_; return *this; }
+        Sparse<T>::const_iterator operator--() { ++index_; return *this; }
+        Sparse<T>::const_iterator operator++(int) { index_--; return *this; }
+        Sparse<T>::const_iterator operator--(int) { index_++; return *this; }
         const_reverse_iterator operator+(size_t idx) const { return const_reverse_iterator(sparse_, index_ - idx); }
         const_reverse_iterator operator-(size_t idx) const { return const_reverse_iterator(sparse_, index_ + idx); }
         const_reverse_iterator operator+=(size_t idx) { index_ -= idx; return *this; }
@@ -76,12 +76,13 @@ public:
         size_t      index_;
     };
 
-    template<typename U = T>
-    Sparse(std::size_t count, U&& sparse_value = T()) :
-        count_{ count }, sparse_default_value_{ std::forward<U>(sparse_value) }
+    template<typename... Args>
+    Sparse(size_t count, Args&&... sparse_value):
+        count_{ count }, 
+        sparse_default_value_{ std::forward<Args>(sparse_value)... }
     {}
 
-    Sparse<T>::reference operator[](size_t index) {
+    inline Sparse<T>::reference operator[](size_t index) {
 #if _ITERATOR_DEBUG_LEVEL>0
         if (index >= count_) throw std::out_of_range("index out of range");
 #endif               
@@ -97,23 +98,28 @@ public:
     }
 
     inline size_t size() const { return count_; };
-
-    void clear() noexcept { values_.clear(); }
+    inline size_t count() const { return values_.size(); }
+    inline void clear() noexcept { values_.clear(); }
 
     Sparse<T>::reference at(size_t index) {
         if (index >= size()) throw std::out_of_range("index out of range");
         return (*this)[index];
     }
-
     const T& at(size_t index) const {
         if (index >= size()) throw std::out_of_range("index out of range");
         return (*this)[index];
     }
 
-    const_iterator begin() const { return const_iterator(*this, 0); }
-    const_iterator end() const { return const_iterator(*this, count_); }
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, count_ - 1); }
-    const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+    inline std::map<size_t, T>& map() { return values_; }
+    inline bool empty() { return values_.empty(); }
+    inline const_iterator begin() const { return const_iterator(*this, 0); }
+    inline const_iterator end() const { return const_iterator(*this, count_); }
+    inline const_iterator cbegin() const { return begin(); }
+    inline const_iterator cend() const { return end(); }
+    inline const_reverse_iterator rbegin() const { return const_reverse_iterator(*this, count_ - 1); }
+    inline const_reverse_iterator rend() const { return const_reverse_iterator(*this, -1); }
+    inline const_reverse_iterator crbegin() const { return rbegin(); }
+    inline const_reverse_iterator crend() const { return rend(); }
 
 private:
     std::map<size_t, T> values_;
