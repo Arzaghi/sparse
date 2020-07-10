@@ -1,6 +1,6 @@
 # Modern C++ Sparse Container
 
-a header only C++11 sparse template container. Sparse container interface looks like other C++ standard template containers such as std::vector. However in a sparse container only the effective values will be stored. So it is a great replacement for std::vector where the sparsity of the container is greather than 0.5 
+a header-only C++11 sparse template container. Sparse container interface looks like other C++ standard template containers such as `std::vector<T>`. However, in a sparse container, only the effective values will be stored. So it could be a great replacement for `std::vector` where the sparsity of the container is greater than 0.5 
 
 ## What is a Sparse Matrix/Array?
 
@@ -8,7 +8,7 @@ In numerical analysis and scientific computing, a sparse matrix or sparse array 
 
 ## Getting Started
 
-It is a header only single .hpp file. Just copy it into your project include directory and try to include it in any translation unit.
+It is a header-only single .hpp file. Just copy it into your project include directory and try to include it in any translation unit.
 
 ```cxx
 #include <sparse.hpp>
@@ -16,7 +16,7 @@ It is a header only single .hpp file. Just copy it into your project include dir
 
 ### Prerequisites
 
-This file only use C++11 standard features. So make sure you are using an up-to-date compiler with at least c++11 support.
+This file only uses C++11 standard features. So make sure you are using an up-to-date compiler with at least c++11 support.
 
 
 ### How to use?
@@ -29,8 +29,8 @@ To Construct an object of the sparse container of integers with size 1000:
 sparse<int> sp(100);
 ```
 
-In the above example of calling constructor the default value of the sparse container is provided by the default constructor of type int. so with the above call the type should provide a default constructor.
-Either you just want to define a custom default value for the sparse container or you are using the container with a template argument that does not support a default constructor you should provide the default value by passing a second or more arument to the constructor either by passing an arbitary argument number of the type constructor or just a lvalue or rvalue of an object of the type.
+In the above example of calling constructor, the default value of the sparse container will be provided by the default constructor of type int. so with the above call, the type should provide a default constructor.
+Either you just want to define a custom default value for the sparse container or you are using the container with a template argument that does not support a default constructor you should provide the default value by passing second or more arguments to the constructor either by passing an arbitrary argument number of the type constructor or just an lvalue or rvalue of an object of the type.
 
 ```cxx
 sparse<std::string> sp(100, std::string("No Value"));
@@ -42,7 +42,7 @@ or in a better approach:
 sparse<std::string> sp(100, "No Value");
 ```
 #### Basic Usage
-The object can be use in a way very similar to other standard C++ containers such as std::vector as bellow:
+The sparse object can be use in a way very similar to other standard C++ containers such as std::vector as bellow:
 
 ```cxx
 sp[0] = 0;
@@ -56,7 +56,7 @@ sp[50] = x;
 std::cout << sp[50] << std::endl;
 ```
 
-The container use a proxy in the return type of operator[] overload (just like std::vector<bool>)
+The container use a proxy in the return type of `operator[]` overload (just like `std::vector<bool>`)
 So it is not possible to capture a non-const refrence to the the underlying type:
 
 ```cxx
@@ -64,7 +64,7 @@ int& rx = sp[10];         // it won't compile!
 const int& crx = sp[10];  // it does compile
 ```
 
-To have a mutable reference to the underlying type you should have the proxy type either by explicitly define the proxy type variable or just using auto keyword:
+To have a mutable reference to the underlying type you should have the proxy type either by explicitly define the proxy type variable or just using `auto` keyword:
 
 ```cxx
 sparse<int>::reference r1 = sp[50];   // This proxy type is just act as a int&
@@ -104,7 +104,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/Arzaghi/sparse/tags). 
+I use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/Arzaghi/sparse/tags). 
 
 ## Authors
 
