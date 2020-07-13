@@ -11,7 +11,7 @@ public:
 
         operator const T& () const {
             auto iter = sparse_.values_.find(index_);
-            if (iter != sparse_.values_.end()) return iter->second; else return sparse_.sparse_default_value_;
+            return iter != sparse_.values_.end() ? iter->second : sparse_.defaultValue();
         }
 
         template<typename U>
@@ -25,8 +25,8 @@ public:
         Sparse<T>& sparse_;
         size_t      index_;
     };
-    
-    class Iterator : public std::iterator<std::random_access_iterator_tag, T, ptrdiff_t, T*, T&> {
+
+    class Iterator {
     public:
 
         using iterator_category = std::random_access_iterator_tag;
@@ -56,10 +56,15 @@ public:
         Iterator  operator+(const ptrdiff_t& movement) { auto oldPtr = index_; index_ += movement; auto temp(*this); index_ = oldPtr; return temp; }
         Iterator  operator-(const ptrdiff_t& movement) { auto oldPtr = index_; index_ -= movement; auto temp(*this); index_ = oldPtr; return temp; }
 
-        //size_t operator-(const Iterator& rawIterator) { return rawIterator.index_ - index_; }
+        //difference_type  operator-(const Iterator& rawIterator) { return index_ - rawIterator.index_; }
 
         reference operator*() { return sparse_[index_]; }
         reference* operator->() { return &sparse_[index_]; }
+
+        inline bool operator<(const Iterator& rawIterator) const { return index_ < rawIterator.index_; }
+        inline bool operator<=(const Iterator& rawIterator) const { return index_ <= rawIterator.index_; }        
+        inline bool operator>(const Iterator& rawIterator) const { return index_ > rawIterator.index_; }        
+        inline bool operator>=(const Iterator& rawIterator) const { return index_ >= rawIterator.index_; }
 
     protected:
 
@@ -67,7 +72,7 @@ public:
         size_t      index_;
     };
 
-    class Const_Iterator : public std::iterator<std::random_access_iterator_tag, T, ptrdiff_t, T*, T&>{
+    class Const_Iterator  {
     public:
 
         using iterator_category = std::random_access_iterator_tag;
@@ -93,7 +98,7 @@ public:
         Const_Iterator  operator+(const ptrdiff_t& movement) { auto oldPtr = index_; index_ += movement; auto temp(*this); index_ = oldPtr; return temp; }
         Const_Iterator  operator-(const ptrdiff_t& movement) { auto oldPtr = index_; index_ -= movement; auto temp(*this); index_ = oldPtr; return temp; }
 
-        //size_t operator-(const Const_Iterator& rawIterator) { return rawIterator.index_ - index_; }
+        difference_type       operator-(const Const_Iterator& rawIterator) { return index_ - rawIterator.index_; }
                 
         const T& operator*() const { return sparse_[index_]; }
         const T* operator->() const { return &sparse_[index_]; }
@@ -138,10 +143,10 @@ public:
         Const_Reverse_Iterator  operator-(const ptrdiff_t& movement) { auto oldPtr = Const_Iterator::index_; Const_Iterator::index_ += movement; auto temp(*this); Const_Iterator::index_ = oldPtr; return temp; }
     };
 
-    typedef Iterator                    iterator;
-    typedef Const_Iterator              const_iterator;
-    typedef Reverse_Iterator            reverse_iterator;
-    typedef Const_Reverse_Iterator      const_reverse_iterator;
+    using iterator               =   Iterator;
+    using const_iterator         =   Const_Iterator;
+    using reverse_iterator       =   Reverse_Iterator;
+    using const_reverse_iterator =   Const_Reverse_Iterator;
 
     template<typename... Args>
     Sparse(size_t count, Args&&... sparse_value):
@@ -161,7 +166,7 @@ public:
         if (index >= count_) throw std::out_of_range("index out of range");
         #endif               
         auto iter = values_.find(index);
-        if (iter != values_.end()) return iter->second; else return sparse_default_value_;
+        if (iter != values_.end()) return iter->second; else return defaultValue();
     }
 
     inline size_t size() const { return count_; };
@@ -180,29 +185,28 @@ public:
     inline std::map<size_t, T>& map() { return values_; }
     inline bool empty() { return values_.empty(); }
 
-    inline iterator begin() { return iterator((*this), 0); }    
-    inline iterator end() { return iterator(*this, count_); }    
+    inline iterator                 begin()             { return iterator((*this), 0); }    
+    inline iterator                 end()               { return iterator(*this, count_); }
+    inline const_iterator           begin()     const   { return cbegin(); }
+    inline const_iterator           end()       const   { return cend(); }
+    inline const_iterator           cbegin()    const   { return const_iterator((*this), 0); }
+    inline const_iterator           cend()      const   { return const_iterator(*this, count_); }
 
-    inline const_iterator begin() const { return cbegin(); }
-    inline const_iterator end() const { return cend(); }
+    inline reverse_iterator         rbegin()            { return reverse_iterator(*this, count_ - 1); }
+    inline reverse_iterator         rend()              { return reverse_iterator(*this, -1); }
+    inline const_reverse_iterator   rbegin()    const   { return crbegin(); }
+    inline const_reverse_iterator   rend()      const   { return crend(); }
+    inline const_reverse_iterator   crbegin()   const   { return const_reverse_iterator(*this, count_ - 1); }
+    inline const_reverse_iterator   crend()     const   { return const_reverse_iterator(*this, count_ - 1); }
 
-    inline const_iterator cbegin() const { const_iterator((*this), 0); }
-    inline const_iterator cend() const { return const_iterator(*this, count_); }
-
-
-    inline reverse_iterator rbegin() { return reverse_iterator(*this, count_ - 1); }
-    inline reverse_iterator rend() { return reverse_iterator(*this, -1); }
-    
-    inline const_reverse_iterator rbegin() const { return crbegin(); }
-    inline const_reverse_iterator rend() const { return crend(); }
-
-    inline const_reverse_iterator crbegin() const { const_reverse_iterator(*this, count_ - 1); }
-    inline const_reverse_iterator crend() const { const_reverse_iterator(*this, count_ - 1); }
-
-
+    inline const T& defaultValue() const { return sparse_default_value_; }    
 
 private:
     std::map<size_t, T> values_;
     size_t              count_;
     T                   sparse_default_value_;
 };
+
+
+template <typename T> inline static bool operator<(const typename Sparse<T>::iterator& lhs, const typename Sparse<T>::iterator& rhs) { return true; }
+template <typename T> inline static bool operator<(const typename Sparse<T>::const_iterator& lhs, const typename Sparse<T>::const_iterator& rhs) { return true; }
