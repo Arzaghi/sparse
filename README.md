@@ -67,7 +67,7 @@ const int& crx = sp[10];  // it does compile
 To have a mutable reference to the underlying type you should have the proxy type either by explicitly define the proxy type variable or just using `auto` keyword:
 
 ```cxx
-sparse<int>::reference r1 = sp[50];   // This proxy type is just act as a int&
+sparse<int>::proxy r1 = sp[50];   	   // This proxy type is just act as a int&
 auto r2 = sp[60];                     // The proxy type will deduce by the compiler
 
 r1 = 5;
