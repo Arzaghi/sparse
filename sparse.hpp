@@ -35,13 +35,8 @@ public:
         using pointer = T*;
         using reference = proxy;
 
-        Iterator(Sparse<T>& sparse, size_t index) :
-            sparse_{ &sparse }, index_{ index }
-        {}     
-
-        Iterator() :
-            sparse_{ nullptr }, index_{0}
-        {}
+        Iterator() : sparse_{ nullptr }, index_{ 0 } {}
+        Iterator(Sparse<T>& sparse, size_t index) : sparse_{ &sparse }, index_{ index } {}             
 
         Iterator& operator=(const Iterator& rawIterator) { index_ = rawIterator.index_; return *this; }
         Iterator& operator=(const difference_type& index) { index_ = index; return *this; }
@@ -54,12 +49,12 @@ public:
 
         Iterator& operator+=(const difference_type& movement) { index_ += movement; return (*this); }
         Iterator& operator-=(const difference_type& movement) { index_ -= movement; return (*this); }
+
         Iterator& operator++() { ++index_; return (*this); }
-        Iterator& operator--() { --index_; return (*this); }
         Iterator  operator++(int) { auto temp(*this); ++index_; return temp; }
-        Iterator  operator--(int) { auto temp(*this); --index_; return temp; }
-        //Iterator  operator+(const difference_type& movement) { auto oldPtr = index_; index_ += movement; auto temp(*this); index_ = oldPtr; return temp; }
-        //Iterator  operator-(const difference_type& movement) { auto oldPtr = index_; index_ -= movement; auto temp(*this); index_ = oldPtr; return temp; }
+
+        Iterator& operator--() { --index_; return (*this); }        
+        Iterator  operator--(int) { auto temp(*this); --index_; return temp; }        
 
         Iterator  operator-(const Iterator& rawIterator) const { return  Iterator(*sparse_, index_ - rawIterator.index_); }
         Iterator  operator-(const difference_type& index) const { return Iterator(*sparse_, index_ - index); }
@@ -91,36 +86,34 @@ public:
         using pointer = T*;
         using reference = proxy;
 
-        Const_Iterator(const Sparse<T>& sparse, size_t index) :
-            sparse_{ &sparse }, index_{ index }
-        {}
+        Const_Iterator(const Sparse<T>& sparse, size_t index) : sparse_{ &sparse }, index_{ index } {}
+        Const_Iterator() : sparse_{ nullptr }, index_{ 0 } {}
 
-        Const_Iterator() :
-            sparse_{ nullptr }, index_{ 0 }
-        {}
+        Const_Iterator& operator=(const Const_Iterator& rawIterator)    { index_ = rawIterator.index_; return *this; }
+        Const_Iterator& operator=(const difference_type& index)         { index_ = index; return *this; }
 
-        Const_Iterator& operator=(const Const_Iterator& rawIterator) {            
-            index_ = rawIterator.index_;
-            return *this;
-        }
+        operator const difference_type& () const { return index_; }        
+        bool operator==(const Const_Iterator& rawIterator)  const { return (index_ == rawIterator.index_ && sparse_->values_.begin() == rawIterator.sparse_->values_.begin()); }
+        bool operator==(const difference_type& index)       const { return (index_ == index); }
+        bool operator!=(const Const_Iterator& rawIterator)  const { return !((*this) == rawIterator); }
+        bool operator!=(const difference_type& index)       const { return (index_ != index); }
 
-        operator const difference_type& () const { return index_; }
-        bool operator==(const Const_Iterator& rawIterator) const { return (index_ == rawIterator.index_ && sparse_->values_.begin() == rawIterator.sparse_->values_.begin()); }
-        bool operator!=(const Const_Iterator& rawIterator) const { return !((*this) == rawIterator); }
 
         Const_Iterator& operator+=(const difference_type& movement) { index_ += movement; return (*this); }
         Const_Iterator& operator-=(const difference_type& movement) { index_ -= movement; return (*this); }
-        Const_Iterator& operator++() { ++index_; return (*this); }
-        Const_Iterator& operator--() { --index_; return (*this); }
-        //Const_Iterator  operator++(int) { auto temp(*this); ++index_; return temp; }
-        //Const_Iterator  operator--(int) { auto temp(*this); --index_; return temp; }
-        //Const_Iterator  operator+(const difference_type& movement) { auto oldPtr = index_; index_ += movement; auto temp(*this); index_ = oldPtr; return temp; }
-        //Const_Iterator  operator-(const difference_type& movement) { auto oldPtr = index_; index_ -= movement; auto temp(*this); index_ = oldPtr; return temp; }
+        
+        Const_Iterator& operator++()    { ++index_; return (*this); }
+        Const_Iterator  operator++(int) { auto temp(*this); ++index_; return temp; }
+        
+        Const_Iterator& operator--()    { --index_; return (*this); }        
+        Const_Iterator  operator--(int) { auto temp(*this); --index_; return temp; }        
 
         Const_Iterator  operator-(const Const_Iterator& rawIterator) const { return  Const_Iterator(*sparse_, index_ - rawIterator.index_); }
         Const_Iterator  operator-(const difference_type& index) const { return Const_Iterator(*sparse_, index_ - index); }
-        difference_type operator-(const Const_Iterator& rawIterator) { return index_ - rawIterator.index_; }
-        //Const_Iterator  operator-(const int& index) const { return Const_Iterator(*sparse_, index_ - index); }
+        Const_Iterator  operator-(const int& index) const { return Const_Iterator(*sparse_, index_ - index); }
+
+        Const_Iterator  operator+(const Const_Iterator& rawIterator) const { return  Const_Iterator(*sparse_, index_ + rawIterator.index_); }
+        Const_Iterator  operator+(const difference_type& index) const { return Const_Iterator(*sparse_, index_ + index); }
         Const_Iterator  operator+(const int& index) const { return Const_Iterator(*sparse_, index_ + index); }
                 
         const T& operator*() const { return (*sparse_)[index_]; }
@@ -134,39 +127,39 @@ public:
 
     class Reverse_Iterator : public Iterator{
     public:
-
         using iterator_category = std::random_access_iterator_tag;
         using value_type = T;
         using difference_type = size_t;
         using pointer = T*;
         using reference = proxy;
 
-        Reverse_Iterator(Sparse<T>& sparse, size_t index) : Iterator(sparse, index) {}        
         Reverse_Iterator() : Iterator() {}
+        Reverse_Iterator(Sparse<T>& sparse, size_t index) : Iterator(sparse, index) {}                
                 
-        Reverse_Iterator& operator=(const Reverse_Iterator& rawIterator) {            
-            Iterator::index_ = rawIterator.index_;
-            return *this;
-        }
+        operator const difference_type& ()                      const { return Iterator::index_; }
+        bool operator==(const Reverse_Iterator& rawIterator)    const { return (Iterator::index_ == rawIterator.index_ && Iterator::sparse_->values_.begin() == rawIterator.sparse_->values_.begin()); }
+        bool operator==(const difference_type& index)           const { return (Iterator::index_ == index); }
+        bool operator!=(const Reverse_Iterator& rawIterator)    const { return !((*this) == rawIterator); }
+        bool operator!=(const difference_type& index)           const { return (Iterator::index_ != index); }
 
-        Reverse_Iterator& operator=(const difference_type& index) { Iterator::index_ = index; return *this; }
-        operator const difference_type& () const { return Iterator::index_; }
+        Reverse_Iterator& operator=(const Reverse_Iterator& rawIterator) { Iterator::index_ = rawIterator.index_; return *this; }
+        Reverse_Iterator& operator=(const difference_type& index) { Iterator::index_ = index; return *this; }        
         
         Reverse_Iterator& operator+=(const difference_type& movement) { Iterator::index_ -= movement; return (*this); }
         Reverse_Iterator& operator-=(const difference_type& movement) { Iterator::index_ += movement; return (*this); }
+        
         Reverse_Iterator& operator++() { --Iterator::index_; return (*this); }
-        Reverse_Iterator& operator--() { ++Iterator::index_; return (*this); }
         Reverse_Iterator  operator++(int) { auto temp(*this); --Iterator::index_; return temp; }
-        Reverse_Iterator  operator--(int) { auto temp(*this); ++Iterator::index_; return temp; }
-        //Reverse_Iterator  operator+(const difference_type& movement) { auto oldPtr = Iterator::index_; Iterator::index_ -= movement; auto temp(*this); Iterator::index_ = oldPtr; return temp; }
-        //Reverse_Iterator  operator-(const difference_type& movement) { auto oldPtr = Iterator::index_; Iterator::index_ += movement; auto temp(*this); Iterator::index_ = oldPtr; return temp; }
 
-        Reverse_Iterator  operator-(const Reverse_Iterator& rawIterator) const { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ - rawIterator.index_); }        
-        Reverse_Iterator  operator-(const difference_type& index) const        { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ - index); }
+        Reverse_Iterator& operator--() { ++Iterator::index_; return (*this); }        
+        Reverse_Iterator  operator--(int) { auto temp(*this); ++Iterator::index_; return temp; }   
 
-        Reverse_Iterator  operator-(const int& index) const { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ - index); }
-        Reverse_Iterator  operator+(const int& index) const { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ + index); }
-
+        Reverse_Iterator  operator-(const Reverse_Iterator& rawIterator)    const   { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ - rawIterator.index_); }
+        Reverse_Iterator  operator-(const difference_type& index)           const   { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ - index); }
+        Reverse_Iterator  operator-(const int& index)                       const   { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ - index); }        
+        Reverse_Iterator  operator+(const Reverse_Iterator& rawIterator)    const   { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ + rawIterator.index_); }
+        Reverse_Iterator  operator+(const difference_type& index)           const   { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ + index); }
+        Reverse_Iterator  operator+(const int& index)                       const   { return Reverse_Iterator(*Iterator::sparse_, Iterator::index_ + index); }
     };
 
     class Const_Reverse_Iterator : public Const_Iterator {
@@ -177,25 +170,34 @@ public:
         using pointer = T*;
         using reference = proxy;
 
-        Const_Reverse_Iterator(const Sparse<T>& sparse, size_t index) :  Const_Iterator(sparse, index){}
-        Const_Reverse_Iterator() : Const_Iterator(){}
+        Const_Reverse_Iterator() : Const_Iterator() {}
+        Const_Reverse_Iterator(const Sparse<T>& sparse, size_t index) :  Const_Iterator(sparse, index){}        
         
-        Const_Reverse_Iterator& operator=(const Const_Reverse_Iterator& rawIterator) {
-            Const_Iterator::index_ = rawIterator.index_;
-            return *this;
-        }
+        operator const difference_type& () const { return Const_Iterator::index_; }
+        bool operator==(const Const_Reverse_Iterator& rawIterator)  const { return (Const_Iterator::index_ == rawIterator.index_ && Const_Iterator::sparse_->values_.begin() == rawIterator.sparse_->values_.begin()); }
+        bool operator==(const difference_type& index)       const { return (Const_Iterator::index_ == index); }
+        bool operator!=(const Const_Reverse_Iterator& rawIterator)  const { return !((*this) == rawIterator); }
+        bool operator!=(const difference_type& index)       const { return (Const_Iterator::index_ != index); }
+
+        Const_Reverse_Iterator& operator=(const Const_Reverse_Iterator& rawIterator) { Const_Iterator::index_ = rawIterator.index_; return *this; }
+        Const_Reverse_Iterator& operator=(const difference_type& index) { Const_Iterator::index_ = index; return *this; }
 
         Const_Reverse_Iterator& operator+=(const ptrdiff_t& movement) { Const_Iterator::index_ -= movement; return (*this); }
         Const_Reverse_Iterator& operator-=(const ptrdiff_t& movement) { Const_Iterator::index_ += movement; return (*this); }
+        
         Const_Reverse_Iterator& operator++() { --Const_Iterator::index_; return (*this); }
-        Const_Reverse_Iterator& operator--() { ++Const_Iterator::index_; return (*this); }
         Const_Reverse_Iterator  operator++(int) { auto temp(*this); --Const_Iterator::index_; return temp; }
-        Const_Reverse_Iterator  operator--(int) { auto temp(*this); ++Const_Iterator::index_; return temp; }
-        //Const_Reverse_Iterator  operator+(const ptrdiff_t& movement) { auto oldPtr = Const_Iterator::index_; Const_Iterator::index_ -= movement; auto temp(*this); Const_Iterator::index_ = oldPtr; return temp; }
-        //Const_Reverse_Iterator  operator-(const ptrdiff_t& movement) { auto oldPtr = Const_Iterator::index_; Const_Iterator::index_ += movement; auto temp(*this); Const_Iterator::index_ = oldPtr; return temp; }
 
-        Const_Reverse_Iterator  operator-(const Const_Reverse_Iterator& rawIterator) const { return Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ - rawIterator.index_); }
+        Const_Reverse_Iterator& operator--() { ++Const_Iterator::index_; return (*this); }        
+        Const_Reverse_Iterator  operator--(int) { auto temp(*this); ++Const_Iterator::index_; return temp; }
+
+        Const_Reverse_Iterator  operator-(const Const_Reverse_Iterator& rawIterator) const { return  Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ - rawIterator.index_); }
         Const_Reverse_Iterator  operator-(const difference_type& index) const { return Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ - index); }
+        Const_Reverse_Iterator  operator-(const int& index) const { return Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ - index); }
+
+        Const_Reverse_Iterator  operator+(const Const_Reverse_Iterator& rawIterator) const { return  Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ + rawIterator.index_); }
+        Const_Reverse_Iterator  operator+(const difference_type& index) const { return Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ + index); }
+        Const_Reverse_Iterator  operator+(const int& index) const { return Const_Reverse_Iterator(*Const_Iterator::sparse_, Const_Iterator::index_ + index); }
     };
 
     using iterator               =   Iterator;
