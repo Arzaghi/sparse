@@ -1,5 +1,11 @@
 # Modern C++ Sparse Container
 
+![Clang 6+](https://img.shields.io/badge/Clang-6%2B-brightgreen.svg?style=plastic)
+![Xcode 9+](https://img.shields.io/badge/Xcode-9%2B-brightgreen.svg?style=plastic)
+![GCC 7+](https://img.shields.io/badge/GCC-7%2B-brightgreen.svg?style=plastic)
+![MSVC 2015](https://img.shields.io/badge/MSVC-2015%2B-brightgreen.svg?style=plastic)
+![GitHub](https://img.shields.io/github/license/Arzaghi/sparse?style=plastic)
+
 a header-only C++11 sparse template container. Sparse container interface looks like other C++ standard template containers such as `std::vector<T>`. However, in a sparse container, only the effective values will be stored. So it could be a great replacement for `std::vector` where the sparsity of the container is greater than 0.5 
 
 ## What is a Sparse Matrix/Array?
