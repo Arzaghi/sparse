@@ -29,7 +29,7 @@ This file only uses C++11 standard features. So make sure you are using an up-to
 
 #### Constructor
 
-To Construct an object of the sparse container of integers with size 1000: 
+To Construct an object of the sparse container of integers with size 100: 
 
 ```cxx
 sparse<int> sp(100);
