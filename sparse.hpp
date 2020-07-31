@@ -1,5 +1,6 @@
 #pragma once
 #include <map>
+#include <stdexcept>
 
 template <typename T> class Sparse {
 public:
@@ -254,7 +255,7 @@ public:
     inline const_reverse_iterator   rbegin()    const   { return crbegin(); }
     inline const_reverse_iterator   rend()      const   { return crend(); }
     inline const_reverse_iterator   crbegin()   const   { return const_reverse_iterator(*this, count_ - 1); }
-    inline const_reverse_iterator   crend()     const   { return const_reverse_iterator(*this, count_ - 1); }
+    inline const_reverse_iterator   crend()     const   { return const_reverse_iterator(*this, -1); }
 
     inline const T& defaultValue() const { return sparse_default_value_; }    
 
