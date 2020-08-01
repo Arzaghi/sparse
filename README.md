@@ -1,6 +1,6 @@
 # Modern C++ Sparse Container
 
-![UnitTest](https://github.com/Arzaghi/sparse/workflows/UnitTest/badge.svg)
+![UnitTest](https://github.com/Arzaghi/sparse/workflows/UnitTest/badge.svg?style=plastic)
 ![Clang 6+](https://img.shields.io/badge/Clang-6%2B-brightgreen.svg?style=plastic&logo=llvm)
 ![Xcode 9+](https://img.shields.io/badge/Xcode-9%2B-brightgreen.svg?style=plastic&logo=xcode&logoColor=white)
 ![GCC 7+](https://img.shields.io/badge/GCC-7%2B-brightgreen.svg?style=plastic&logo=gnu)
