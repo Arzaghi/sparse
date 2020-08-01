@@ -1,0 +1,23 @@
+name: UnitTest
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: build tests using gcc
+      run: g++ -o tests_gcc.out -std=c++11 ./Tests/*.cpp
+    - name: run gcc tests
+      run: ./tests_gcc.out
+    - name: build tests using clang
+      run: clang++ -o tests_clang.out -std=c++11 ./Tests/*.cpp
+    - name: run clang tests
+      run: ./tests_clang.out
