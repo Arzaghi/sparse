@@ -1,5 +1,4 @@
-bool test_acculmulate();
-bool test_max_element();
+#include "Tests.h"
 
 int main() {
 
@@ -7,6 +6,9 @@ int main() {
 	
 	res &= test_acculmulate();
 	res &= test_max_element();
+	res &= test_min_element();
+	//res &= test_all_of();
+	//res &= test_any_of();
 
 	return (res ? 0 : -1);
 
