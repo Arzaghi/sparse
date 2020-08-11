@@ -10,5 +10,8 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: g++ ./Tests/main.cpp    
-  displayName: 'make'
+- script: g++ -o ./Tests/test ./Tests/main.cpp    
+  displayName: 'build'
+- script:  ./Tests/test
+  displayName: 'Run Tests'
+
